@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>(function(){var t=localStorage.getItem('mt-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+
+  <title>AI Governance Thesis | Mani Tiwari</title>
+  <meta name="description" content="Why enterprise AI governance programs fail under OCC and Fed scrutiny — and the control architecture required to build programs that actually function. A practitioner's view from inside regulated financial services.">
+  <meta name="keywords" content="AI governance framework, NIST AI RMF implementation, OCC AI governance, Fed model risk management, ISO 42001, enterprise AI controls, audit-defensible AI, SR 11-7, continuous control monitoring AI">
+  <meta name="author" content="Mani Tiwari">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://manitiwari.com/ai-governance.html">
+
+  <meta property="og:title" content="AI Governance Thesis | Mani Tiwari">
+  <meta property="og:description" content="Why enterprise AI governance programs fail under regulatory scrutiny, and what it takes to build programs that hold up.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://manitiwari.com/ai-governance.html">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Why Enterprise AI Governance Programs Fail — and What Sound Architecture Looks Like",
+    "author": {"@type":"Person","name":"Mani Tiwari","url":"https://manitiwari.com"},
+    "publisher": {"@type":"Person","name":"Mani Tiwari","url":"https://manitiwari.com"},
+    "mainEntityOfPage": "https://manitiwari.com/ai-governance.html",
+    "description": "A practitioner's account of the failure modes in enterprise AI governance and the architecture required to build programs that function under OCC and Fed scrutiny."
+  }
+  </script>
+
+  <style>
+/* ================================================================
+   manitiwari.com — Executive Branding Site
+   Typography: IBM Plex Serif (display) + Barlow (UI)
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,300;0,400;1,300&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
+
+/* ── DARK MODE (default) ─────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
+  --bg:      #0c0c0c;
+  --bg-2:    #141414;
+  --text-1:  #edeae2;
+  --text-2:  #7e7a75;
+  --text-3:  #424040;
+  --rule:    rgba(255,255,255,0.07);
+  --rule-2:  rgba(255,255,255,0.14);
+  --nav-bg:  rgba(12,12,12,0.94);
+}
+
+/* ── LIGHT MODE ──────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:      #f7f4ee;
+  --bg-2:    #ede9e0;
+  --text-1:  #141210;
+  --text-2:  #6e6a64;
+  --text-3:  #aaa49d;
+  --rule:    rgba(0,0,0,0.07);
+  --rule-2:  rgba(0,0,0,0.16);
+  --nav-bg:  rgba(247,244,238,0.95);
+}
+
+[data-theme="light"] .hero::before {
+  background-image: radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px);
+}
+
+/* ── SHARED VARIABLES ────────────────────────────────────────── */
+:root {
+  --serif:   'IBM Plex Serif', Georgia, serif;
+  --sans:    'Barlow', system-ui, sans-serif;
+  --mw:      1160px;
+  --px:      clamp(1.5rem, 5vw, 4rem);
+  --nav-h:   60px;
+}
+
+/* ── RESET ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text-1);
+  font-size: 16px;
+  line-height: 1.7;
+  min-height: 100vh;
+  transition: background 0.25s, color 0.25s;
+}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+/* ── NAV ────────────────────────────────────────────────────── */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  z-index: 100;
+  background: var(--nav-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 0.5px solid var(--rule);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--px);
+}
+
+.nav-inner {
+  max-width: var(--mw);
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-1);
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  transition: color 0.2s;
+}
+
+.nav-links a:hover  { color: var(--text-1); }
+.nav-links a.active { color: var(--text-1); }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  flex-shrink: 0;
+}
+
+/* theme toggle */
+.theme-toggle {
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: 0.5px solid var(--rule-2);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, border-color 0.2s;
+  font-size: 13px;
+  line-height: 1;
+  padding: 0;
+}
+.theme-toggle:hover { color: var(--text-1); border-color: var(--text-2); }
+
+.nav-cta {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-1);
+  border: 0.5px solid var(--rule-2);
+  padding: 8px 18px;
+  transition: border-color 0.2s;
+}
+.nav-cta:hover { border-color: var(--text-2); }
+
+.nav-mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-2);
+  font-size: 20px;
+  line-height: 1;
+  padding: 4px;
+}
+
+/* ── CONTAINER ──────────────────────────────────────────────── */
+.container {
+  max-width: var(--mw);
+  margin: 0 auto;
+  padding: 0 var(--px);
+}
+
+main { padding-top: var(--nav-h); }
+
+.hr {
+  border: none;
+  border-top: 0.5px solid var(--rule);
+  margin: 0;
+}
+
+/* ── HERO (HOME) ────────────────────────────────────────────── */
+.hero {
+  padding: 7rem var(--px) 6rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px);
+  background-size: 36px 36px;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.hero-inner {
+  max-width: var(--mw);
+  margin: 0 auto;
+  position: relative;
+}
+
+.hero-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  font-weight: 500;
+  margin-bottom: 2rem;
+  display: block;
+}
+
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.8rem, 6vw, 5.25rem);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: var(--text-1);
+  margin-bottom: 1.75rem;
+  max-width: 16ch;
+}
+
+.hero-sub {
+  font-size: clamp(0.975rem, 1.4vw, 1.1rem);
+  color: var(--text-2);
+  line-height: 1.75;
+  max-width: 56ch;
+  margin-bottom: 2.5rem;
+  font-weight: 300;
+}
+
+.btn-row {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 3.5rem;
+}
+
+.btn-ghost {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-1);
+  border: 0.5px solid var(--rule-2);
+  padding: 11px 22px;
+  transition: border-color 0.2s;
+  display: inline-block;
+}
+.btn-ghost:hover { border-color: var(--text-2); }
+
+.btn-text {
+  font-size: 13px;
+  color: var(--text-2);
+  transition: color 0.2s;
+}
+.btn-text:hover { color: var(--text-1); }
+
+.context-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 2.5rem;
+}
+.context-strip span {
+  font-size: 12px;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+}
+
+/* ── TWO-COLUMN SECTIONS ────────────────────────────────────── */
+.section { padding: 5.5rem 0; }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 0 5rem;
+  max-width: var(--mw);
+  margin: 0 auto;
+  padding: 0 var(--px);
+}
+
+.col-label { padding-top: 0.15rem; }
+
+.label-text {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-weight: 500;
+  display: block;
+}
+
+.section-tag {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-weight: 400;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.section-tag::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 0.5px;
+  background: var(--text-3);
+}
+
+.col-content h2 {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  margin-bottom: 1.5rem;
+  color: var(--text-1);
+}
+
+.col-content p {
+  color: var(--text-2);
+  font-size: 15px;
+  line-height: 1.78;
+  font-weight: 300;
+  max-width: 66ch;
+  margin-bottom: 1rem;
+}
+.col-content p:last-of-type { margin-bottom: 0; }
+
+.link-arrow {
+  display: inline-block;
+  font-size: 13px;
+  color: var(--text-2);
+  margin-top: 1.25rem;
+  transition: color 0.2s;
+}
+.link-arrow:hover { color: var(--text-1); }
+
+/* ── OPERATING DOMAINS ──────────────────────────────────────── */
+.domains-grid {
+  margin-top: 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.domain-item {
+  padding: 1.75rem 2rem 1.75rem 0;
+  border-top: 0.5px solid var(--rule);
+}
+
+.domain-num {
+  font-size: 11px;
+  color: var(--text-3);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.6rem;
+  display: block;
+  font-variant-numeric: tabular-nums;
+}
+
+.domain-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-1);
+  margin-bottom: 0.5rem;
+  line-height: 1.35;
+}
+
+.domain-desc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.65;
+  font-weight: 300;
+}
+
+/* ── PROOF VIGNETTES ────────────────────────────────────────── */
+.proof-grid {
+  margin-top: 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem 3rem;
+}
+
+.proof-category {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 0.6rem;
+  display: block;
+}
+
+.proof-heading {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-1);
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.proof-body {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.68;
+  font-weight: 300;
+}
+
+/* ── CAREER ARC ─────────────────────────────────────────────── */
+.arc-items { margin-top: 2rem; }
+
+.arc-item {
+  padding: 2.25rem 0;
+  border-top: 0.5px solid var(--rule);
+}
+
+.arc-theme {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 0.6rem;
+  display: block;
+}
+
+.arc-title {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--text-1);
+  margin-bottom: 0.85rem;
+  line-height: 1.35;
+}
+
+.arc-body {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.78;
+  font-weight: 300;
+  max-width: 70ch;
+}
+
+/* ── CREDENTIALS ────────────────────────────────────────────── */
+.cred-group {
+  padding: 1.75rem 0;
+  border-top: 0.5px solid var(--rule);
+}
+
+.cred-group-label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.cred-list {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.75;
+  font-weight: 300;
+}
+
+.cred-note {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 0.2rem;
+  display: block;
+}
+
+/* ── SUMMARY HEADLINE ───────────────────────────────────────── */
+.summary-headline {
+  font-family: var(--serif);
+  font-size: clamp(1.2rem, 2.2vw, 1.75rem);
+  font-weight: 300;
+  line-height: 1.3;
+  color: var(--text-1);
+  margin-bottom: 1.5rem;
+}
+
+/* ── PAGE HERO (inner pages) ────────────────────────────────── */
+.page-hero {
+  padding: 5.5rem var(--px) 5rem;
+  max-width: var(--mw);
+  margin: 0 auto;
+}
+
+.breadcrumb {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+}
+.breadcrumb a { color: var(--text-3); transition: color 0.2s; }
+.breadcrumb a:hover { color: var(--text-2); }
+.breadcrumb li + li::before { content: '·'; margin-right: 0.5rem; }
+
+.page-hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin-bottom: 1.25rem;
+}
+
+.page-hero .hero-sub {
+  font-size: 16px;
+  color: var(--text-2);
+  font-weight: 300;
+  line-height: 1.75;
+  max-width: 62ch;
+  margin-bottom: 0;
+}
+
+/* ── THESIS BLOCKS ──────────────────────────────────────────── */
+.thesis-block {
+  padding: 2.5rem 0;
+  border-top: 0.5px solid var(--rule);
+}
+
+.thesis-num {
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.6rem;
+  display: block;
+}
+
+.thesis-title {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--text-1);
+  margin-bottom: 0.85rem;
+}
+
+.thesis-body {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.8;
+  font-weight: 300;
+  max-width: 68ch;
+}
+
+/* ── LINKEDIN POSTS (Thought Leadership) ────────────────────── */
+.posts-list { margin-top: 2rem; }
+
+.post-card {
+  padding: 1.75rem 0;
+  border-top: 0.5px solid var(--rule);
+}
+
+.post-meta {
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: 0.7rem;
+}
+
+.post-date, .post-tag {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.post-text {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.72;
+  font-weight: 300;
+  white-space: pre-line;
+}
+
+.post-text.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-actions {
+  margin-top: 0.85rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.post-expand-btn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--sans);
+  transition: color 0.2s;
+  letter-spacing: 0.06em;
+}
+.post-expand-btn:hover { color: var(--text-2); }
+
+.post-li-link {
+  font-size: 12px;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+  transition: color 0.2s;
+}
+.post-li-link:hover { color: var(--text-2); }
+
+.posts-sentinel {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.posts-loading {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+/* ── INSIGHT CARDS ──────────────────────────────────────────── */
+.insight-item {
+  padding: 2rem 0;
+  border-top: 0.5px solid var(--rule);
+  display: grid;
+  grid-template-columns: 1fr 28px;
+  gap: 1rem 2rem;
+  align-items: start;
+  transition: opacity 0.2s;
+}
+.insight-item:hover { opacity: 0.7; }
+
+.insight-category {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.insight-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-1);
+  margin-bottom: 0.4rem;
+  line-height: 1.35;
+}
+
+.insight-desc {
+  font-size: 13px;
+  color: var(--text-2);
+  font-weight: 300;
+  line-height: 1.65;
+}
+
+.insight-arrow {
+  font-size: 16px;
+  color: var(--text-3);
+  padding-top: 0.2rem;
+}
+
+/* ── CTA SECTIONS ───────────────────────────────────────────── */
+.section-cta { padding: 6rem 0; }
+
+.cta-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 1.25rem;
+  display: block;
+}
+
+.section-cta h2 {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  font-weight: 300;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.section-cta p {
+  color: var(--text-2);
+  font-size: 15px;
+  font-weight: 300;
+  max-width: 54ch;
+  margin-bottom: 2rem;
+  line-height: 1.75;
+}
+
+/* ── CONTACT ────────────────────────────────────────────────── */
+.contact-body {
+  font-size: 15px;
+  color: var(--text-2);
+  font-weight: 300;
+  line-height: 1.8;
+  max-width: 58ch;
+  margin-bottom: 2.5rem;
+}
+
+.linkedin-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-1);
+  border: 0.5px solid var(--rule-2);
+  padding: 13px 26px;
+  transition: border-color 0.2s;
+}
+.linkedin-cta:hover { border-color: var(--text-2); }
+
+.contact-note {
+  margin-top: 2rem;
+  font-size: 13px;
+  color: var(--text-3);
+  max-width: 52ch;
+  line-height: 1.7;
+}
+
+.context-item {
+  padding: 1.25rem 0;
+  border-top: 0.5px solid var(--rule);
+}
+
+.context-role {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-1);
+  margin-bottom: 0.3rem;
+}
+
+.context-desc {
+  font-size: 13px;
+  color: var(--text-2);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+/* ── FOOTER ─────────────────────────────────────────────────── */
+.footer {
+  border-top: 0.5px solid var(--rule);
+  padding: 3.5rem 0 3rem;
+}
+
+.footer-inner {
+  max-width: var(--mw);
+  margin: 0 auto;
+  padding: 0 var(--px);
+}
+
+.footer-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-1);
+  margin-bottom: 0.4rem;
+}
+
+.footer-tagline {
+  font-size: 13px;
+  color: var(--text-2);
+  font-weight: 300;
+  margin-bottom: 1.75rem;
+  line-height: 1.5;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  list-style: none;
+}
+
+.footer-links a {
+  font-size: 12px;
+  color: var(--text-3);
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--text-2); }
+
+.footer-creds {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+}
+
+.footer-copy {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* ── SCROLL REVEAL ──────────────────────────────────────────── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero .hero-eyebrow  { animation: fadeUp 0.65s ease 0s    both; }
+.hero h1             { animation: fadeUp 0.65s ease 0.08s both; }
+.hero .hero-sub      { animation: fadeUp 0.65s ease 0.18s both; }
+.hero .btn-row       { animation: fadeUp 0.65s ease 0.28s both; }
+.hero .context-strip { animation: fadeUp 0.65s ease 0.38s both; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .two-col {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .col-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .col-label::after {
+    content: '';
+    flex: 1;
+    height: 0.5px;
+    background: var(--rule);
+  }
+  .domains-grid { grid-template-columns: 1fr; }
+  .proof-grid   { grid-template-columns: 1fr; gap: 2rem 0; }
+}
+
+@media (max-width: 720px) {
+  .nav-links    { display: none; }
+  .nav-cta      { display: none; }
+  .nav-mobile-toggle { display: block; }
+
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: var(--nav-h);
+    left: 0; right: 0;
+    background: var(--bg);
+    border-bottom: 0.5px solid var(--rule);
+    padding: 1.5rem var(--px);
+    gap: 1.25rem;
+    z-index: 99;
+  }
+  .nav-links.open a { font-size: 13px; letter-spacing: 0.1em; }
+
+  .hero        { padding: 5rem var(--px) 4rem; }
+  .section     { padding: 3.5rem 0; }
+  .section-cta { padding: 4rem 0; }
+  .btn-row     { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .page-hero   { padding: 4rem var(--px) 3.5rem; }
+}
+
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Mani Tiwari</a>
+    <button class="nav-mobile-toggle" id="navToggle" aria-label="Open navigation">&#9776;</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="profile.html">Profile</a></li>
+      <li><a href="ai-governance.html" class="active">AI Governance</a></li>
+      <li><a href="insights.html">Insights</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Switch to light mode">&#9788;</button>
+      <a href="contact.html" class="nav-cta">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+  <div style="border-bottom: 0.5px solid var(--rule);">
+    <div class="page-hero">
+      <ul class="breadcrumb">
+        <li><a href="index.html">Home</a></li>
+        <li>AI Governance</li>
+      </ul>
+      <h1>AI Governance</h1>
+      <p class="hero-sub">Why enterprise AI governance programs fail under regulatory scrutiny &mdash; and the control architecture that makes the difference between a program that looks complete and one that actually is.</p>
+    </div>
+  </div>
+
+  <!-- THE REAL FAILURE MODE -->
+  <section class="section">
+    <div class="two-col fade-in">
+      <div class="col-label"><span class="label-text">The Problem</span></div>
+      <div class="col-content">
+        <div class="section-tag">What I Keep Seeing</div>
+        <h2>The failure mode is consistent. And it is almost never the technology.</h2>
+        <p>The governance documentation is comprehensive. The lifecycle is mapped. Evidence templates are complete. The program passed the first examination. Then the regulator comes back six months later and asks to see the controls actually running &mdash; and things go quiet.</p>
+        <p>Not because the controls don't exist. Because they were designed to document compliance rather than to enforce it. The lifecycle governance lives in a PDF that nobody updated between model deployments. The KRIs are defined but the monitoring infrastructure was never built. The board reporting was generated for the meeting and not touched again until the next one.</p>
+        <p>This gap &mdash; between governance that exists and governance that functions &mdash; is where regulatory credibility breaks down. It is also entirely predictable, because building programs that actually run requires the same discipline as any other engineering problem. You need the right architecture. And you need someone accountable for the whole thing, not just their piece of it.</p>
+        <p>I have spent 18 years closing that gap inside some of the most scrutinized financial institutions in the country. This is what I have learned about what it takes.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="hr">
+
+  <!-- THE ARCHITECTURE -->
+  <section class="section">
+    <div class="two-col fade-in">
+      <div class="col-label"><span class="label-text">The Architecture</span></div>
+      <div class="col-content">
+        <div class="section-tag">Three Things That Have to Be Built Together</div>
+        <h2>Lifecycle controls. Continuous assurance. Executive accountability. You cannot sequence them.</h2>
+        <p>Every AI governance program I have seen succeed had these three components operational simultaneously. Every program I have seen fail was missing at least one &mdash; usually the second, occasionally the third, sometimes the first in the places that mattered most.</p>
+
+        <div class="thesis-block">
+          <span class="thesis-num">01</span>
+          <div class="thesis-title">Lifecycle Controls &mdash; From the First Line of Code to Retirement</div>
+          <div class="thesis-body">SR 11-7 and NIST AI RMF are not governance programs. They are frameworks. The gap between knowing a framework and having built a program inside one is the difference between advisory familiarity and operating depth &mdash; and OCC examiners can tell the difference in the first thirty minutes of a review.
+
+Lifecycle controls mean that every stage of a model's existence &mdash; identification, development, validation, deployment, monitoring, retirement &mdash; produces structured, traceable evidence. Evaluation protocols with defined thresholds, not narrative summaries. Prompt governance standards with documented rationale, not general principles. Change management processes that actually capture what changed and who approved it. The evidence does not exist to satisfy the examiner. It exists because the program runs that way every day.</div>
+        </div>
+
+        <div class="thesis-block">
+          <span class="thesis-num">02</span>
+          <div class="thesis-title">Continuous Assurance &mdash; The One That Almost Nobody Has Built Correctly</div>
+          <div class="thesis-body">Point-in-time reviews are structurally insufficient for AI risk. Models drift. Data distributions shift. Operational context changes. A governance program running quarterly assessments is measuring a prior state of a system that is no longer in that state.
+
+The question I ask when I evaluate a program's monitoring infrastructure: if a model's behavior changed materially yesterday, how long before someone at the executive level knows? For most programs, the honest answer is the next scheduled review. That is not continuous assurance. That is periodic documentation with a continuous-sounding name.
+
+Continuous control monitoring is a data engineering problem as much as a governance problem. It requires KRI frameworks that detect drift in real time, automated dashboards that surface control health without human intermediation, and incident trend analytics that identify emerging exposures before they become findings. Building that infrastructure is why dual fluency across technical depth and governance strategy is not optional for this work.</div>
+        </div>
+
+        <div class="thesis-block">
+          <span class="thesis-num">03</span>
+          <div class="thesis-title">Executive Accountability &mdash; What Boards Actually Need to Provide Oversight</div>
+          <div class="thesis-body">Governance programs that cannot be explained to a board are governance programs that cannot be defended to a regulator. The challenge is that boards and audit committees need enough specificity to provide genuine challenge without the technical detail that obscures rather than illuminates.
+
+That translation is harder than it looks, and most programs get it wrong in one of two directions: reporting that is so high-level it becomes uninformative, or reporting that is so detailed it requires a technical interpreter to make sense of it. Neither produces real oversight.
+
+What I have built, and what works, is an accountability architecture that synthesizes model risk exposures, lifecycle gaps, control coverage ratios, and regulatory posture into a narrative that enables the board to ask hard questions, receive direct answers, and make informed decisions. Not compliance theater. Actual governance at the highest level of the organization.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="hr">
+
+  <!-- REGULATORY STANDARDS -->
+  <section class="section">
+    <div class="two-col fade-in">
+      <div class="col-label"><span class="label-text">The Standards</span></div>
+      <div class="col-content">
+        <div class="section-tag">Applied in Practice, Not Studied from the Outside</div>
+        <h2>The regulatory frameworks that shape what auditable AI actually requires.</h2>
+        <p>The difference between knowing what NIST AI RMF says and having codified it into operational controls is not subtle. Examiners see the difference immediately. The frameworks below are not reference material &mdash; they are the vocabulary of programs I have built.</p>
+
+        <div class="domains-grid" style="margin-top:2rem;">
+          <div class="domain-item">
+            <span class="domain-num">NIST AI RMF</span>
+            <div class="domain-desc">Operationalized as living controls, not a documentation checklist. Codified into escalation pathways and lifecycle controls for enterprise GenAI and agentic deployments at a Tier-1 regulated institution.</div>
+          </div>
+          <div class="domain-item">
+            <span class="domain-num">ISO 42001</span>
+            <div class="domain-desc">AI Management System standard integrated into GRC program infrastructure &mdash; risk assessment, organizational context, and continuous improvement architecture built to function, not to certify.</div>
+          </div>
+          <div class="domain-item">
+            <span class="domain-num">SR 11-7 / OCC &amp; Fed</span>
+            <div class="domain-desc">Bank-wide model governance aligned to SR 11-7 guidance. Decision rights mapped across the full MRM lifecycle. Regulatory examination posture built as a persistent operational state, not a pre-examination preparation mode.</div>
+          </div>
+          <div class="domain-item">
+            <span class="domain-num">SOX / GDPR / PCI-DSS</span>
+            <div class="domain-desc">Cross-framework compliance programs designed for institutions operating under multiple simultaneous regulatory regimes &mdash; US and European contexts, without the usual gaps that appear at the intersections.</div>
+          </div>
+          <div class="domain-item">
+            <span class="domain-num">BCBS 239</span>
+            <div class="domain-desc">Board reporting acceleration and data quality governance. Control use cases defined. Automated monitoring established. Trusted data foundation built for Commercial Banking at enterprise scale.</div>
+          </div>
+          <div class="domain-item">
+            <span class="domain-num">COBIT for AI</span>
+            <div class="domain-desc">Governance and management objectives applied to AI-specific risk domains &mdash; bridging enterprise IT governance with the accountability architecture that AI programs require at scale.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="hr">
+
+  <section class="section-cta fade-in">
+    <div class="container">
+      <span class="cta-eyebrow">Start a Conversation</span>
+      <h2>Discuss what your organization<br>needs to build.</h2>
+      <p>For organizations building GenAI assurance programs, navigating OCC or Fed examination cycles, or designing the control infrastructure for enterprise AI adoption at scale.</p>
+      <div class="btn-row">
+        <a href="contact.html" class="btn-ghost">Start a Conversation</a>
+        <a href="profile.html" class="btn-text">View Executive Profile &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-name">Mani Tiwari</div>
+    <div class="footer-tagline">AI Governance &amp; Enterprise Risk Leadership &middot; Fortune 100 Financial Services &middot; Dallas&ndash;Fort Worth, TX</div>
+    <ul class="footer-links">
+      <li><a href="profile.html">Executive Profile</a></li>
+      <li><a href="ai-governance.html">AI Governance</a></li>
+      <li><a href="insights.html">Insights</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="https://www.linkedin.com/in/manitiwari/" target="_blank" rel="noopener">LinkedIn &#8599;</a></li>
+    </ul>
+    <div class="footer-creds">CRISC &middot; CISA &middot; CISM &middot; CCSP &middot; CDPSE &middot; AAISM &middot; NIST AI RMF &middot; ISO 42001 &middot; Wharton AI Model Risk</div>
+    <div class="footer-copy">&copy; 2026 Mani Tiwari. All rights reserved. &middot; Xavier Institute of Management &middot; Assam Engineering College</div>
+  </div>
+</footer>
+
+<script>
+  const savedTheme = localStorage.getItem('mt-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  const themeBtn = document.getElementById('themeToggle');
+  function syncToggle(theme) {
+    themeBtn.textContent = theme === 'dark' ? '\u2600' : '\u263D';
+    themeBtn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+  syncToggle(savedTheme);
+  themeBtn.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('mt-theme', next);
+    syncToggle(next);
+  });
+  const navToggle = document.getElementById('navToggle');
+  const navLinks  = document.getElementById('navLinks');
+  if (navToggle) navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+  const fadeEls = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }});
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    fadeEls.forEach(el => io.observe(el));
+  } else {
+    fadeEls.forEach(el => el.classList.add('visible'));
+  }
+</script>
+</body>
+</html>
